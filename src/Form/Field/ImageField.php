@@ -4,9 +4,7 @@ namespace Dcat\Admin\Form\Field;
 
 use Dcat\Admin\Exception\AdminException;
 use Illuminate\Support\Str;
-use Intervention\Image\Constraint;
-use Intervention\Image\Facades\Image as InterventionImage;
-use Intervention\Image\ImageManagerStatic;
+use Intervention\Image\Laravel\Facades\Image;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 trait ImageField
@@ -49,7 +47,10 @@ trait ImageField
     public function callInterventionMethods($target, $mime)
     {
         if (! empty($this->interventionCalls)) {
-            $image = ImageManagerStatic::make($target);
+            /**
+             * @covers Image::make -> Image::read
+             */
+            $image = Image::read($target);
 
             $mime = $mime ?: finfo_file(finfo_open(FILEINFO_MIME_TYPE), $target);
 
@@ -57,7 +58,12 @@ trait ImageField
                 call_user_func_array(
                     [$image, $call['method']],
                     $call['arguments']
-                )->save($target, null, $mime);
+                )
+                    /**
+                     * @covers save($target, null, $mime) -> save($target)
+                     * 因为新版不需要指定保存格式
+                     */
+                    ->save($target);
             }
         }
 
@@ -79,7 +85,10 @@ trait ImageField
             return parent::__call($method, $arguments);
         }
 
-        if (! class_exists(ImageManagerStatic::class)) {
+        /**
+         * @covers ImageManagerStatic -> Image
+         */
+        if (! class_exists(Image::class)) {
             throw new AdminException('To use image handling and manipulation, please install [intervention/image] first.');
         }
 
@@ -172,19 +181,20 @@ trait ImageField
             // We merge original name + thumbnail name + extension
             $path = $path.'-'.$name.'.'.$ext;
 
-            /** @var \Intervention\Image\Image $image */
-            $image = InterventionImage::make($file);
+            /** @covers Image::make -> Image::read */
+            $image = Image::read($file);
 
-            $action = $size[2] ?? 'resize';
+            /** @covers 直接改用 $image->scale 实现等比缩放 */
             // Resize image with aspect ratio
-            $image->$action($size[0], $size[1], function (Constraint $constraint) {
-                $constraint->aspectRatio();
-            });
+            $image->scale($size[0], $size[1]);
 
+            /**
+             * @covers $image->encode()->stream() -> $image->encode()
+             */
             if (! is_null($this->storagePermission)) {
-                $this->getStorage()->put("{$this->getDirectory()}/{$path}", $image->encode()->stream(), $this->storagePermission);
+                $this->getStorage()->put("{$this->getDirectory()}/{$path}", $image->encode(), $this->storagePermission);
             } else {
-                $this->getStorage()->put("{$this->getDirectory()}/{$path}", $image->encode()->stream());
+                $this->getStorage()->put("{$this->getDirectory()}/{$path}", $image->encode());
             }
         }
 

@@ -228,7 +228,12 @@ class NestedForm extends WidgetForm
                 $value = $field->prepare($value);
             }
 
-            if (($field instanceof Form\Field\Hidden) || ! Helper::equal($field->original(), $value)) {
+            if (($field instanceof Form\Field\Hidden)
+            // 防止图片在没修改时被更新，因为图片更新是删除原图，再更新的
+            // 但NestedForm如果有{key:value}的json字段，则会出现丢失的问题
+            // todo: 后续想办法解决
+            // || ! Helper::equal($field->original(), $value)
+            ) {
                 if (is_array($columns)) {
                     foreach ($columns as $name => $column) {
                         Arr::set($prepared, $column, $value[$name]);

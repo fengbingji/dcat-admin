@@ -18,8 +18,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  * @method $this exif(string $key = null) Read Exif meta data from current image.
  * @method $this iptc(string $key = null) Read Iptc meta data from current image.
  * @method $this flip(string $mode = 'h') Mirror the current image horizontally or vertically by specifying the mode.
- * @method $this fit(int $width, int $height = null, \Closure $callback = null, string $position = 'center') Combine cropping and resizing to format image in a smart way. The method will find the best fitting aspect ratio of your given width and height on the current image automatically, cut it out and resize it to the given dimension. You may pass an optional Closure callback as third parameter, to prevent possible upsizing and a custom position of the cutout as fourth parameter.
- * @method $this gamma(float $correction) Performs a gamma correction operation on the current image.
+  * @method $this gamma(float $correction) Performs a gamma correction operation on the current image.
  * @method $this greyscale() Turns image into a greyscale version.
  * @method $this heighten(int $height, \Closure $callback = null) Resizes the current image to new height, constraining aspect ratio. Pass an optional Closure callback as third parameter, to apply additional constraints like preventing possible upsizing.
  * @method $this insert(mixed $source, string $position = 'top-left', int $x = 0, int $y = 0) Paste a given image source over the current image with an optional position and a offset coordinate. This method can be used to apply another image as watermark because the transparency values are maintained.
@@ -42,8 +41,11 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  * @method $this rotate(float $angle, mixed $bgcolor = null) Rotate the current image counter-clockwise by a given angle. Optionally define a background color for the uncovered zone after the rotation.
  * @method $this sharpen(int $amount = 10) Sharpen current image with an optional amount. Use values between 0 and 100.
  * @method $this text(string $text, int $x = 0, int $y = 0, \Closure $callback = null) Write a text string to the current image at an optional x,y basepoint position. You can define more details like font-size, font-file and alignment via a callback as the fourth parameter.
- * @method $this trim(string $base = 'top-left', array $away = array('top', 'bottom', 'left', 'right'), int $tolerance = 0, int $feather = 0) Trim away image space in given color. Define an optional base to pick a color at a certain position and borders that should be trimmed away. You can also set an optional tolerance level, to trim similar colors and add a feathering border around the trimed image.
- * @method $this widen(int $width, \Closure $callback = null) Resizes the current image to new width, constraining aspect ratio. Pass an optional Closure callback as third parameter, to apply additional constraints like preventing possible upsizing.
+ * @method $this toWebp(int $quality = 75) 以 WebP 图形格式以给定的质量对当前图像实例进行编码，范围介于 0（低质量）和 100（最佳质量）之间。
+ * @method $this toJpeg(int $quality = 75, bool $progressive = false) 以给定质量的 JPEG 格式对当前图像实例进行编码，范围介于 0（表示低质量）和 100（表示最佳质量）之间。progressive : 以渐进式 Jpeg 格式对图像进行编码的选项。默认情况下处于禁用状态。
+ * @method $this scale(int $width = null, int $height = null) 按比例调整图像大小，且不裁剪
+ * @method $this scaleDown(int $width = null, int $height = null) 按比例调整图像大小，且不裁剪,缩放图像但不超过原始大小
+ * @method $this cover(int $width, int $height = null, string $position = 'center') 等比调整大小, 多余部分裁剪至指定宽高
  */
 class Image extends File
 {
