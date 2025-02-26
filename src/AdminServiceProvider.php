@@ -172,7 +172,25 @@ class AdminServiceProvider extends ServiceProvider
             $this->publishes([__DIR__.'/../resources/lang' => $this->app->langPath()], 'dcat-admin-lang');
             $this->publishes([__DIR__.'/../database/migrations' => database_path('migrations')], 'dcat-admin-migrations');
             $this->publishes([__DIR__.'/../resources/dist' => public_path(Admin::asset()->getRealPath('@admin'))], 'dcat-admin-assets');
+            $this->publishes([__DIR__.'/../resources/views/layouts/container.blade.php' => $this->app->resourcePath('views/admin/layouts/')], 'dcat-admin-views');
+            $this->publishesViews();
         }
+    }
+
+    /**
+     * 发布Views文件
+     *
+     * @return void
+     */
+    protected function publishesViews()
+    {
+        // 目标目录路径
+        $targetDir = $this->app->resourcePath('views/admin/layouts/');
+        // 检查目录是否存在，如果不存在则创建
+        if (!file_exists($targetDir)) {
+            mkdir($targetDir, 0755, true);
+        }
+        $this->publishes([__DIR__.'/../resources/views/layouts/container.blade.php' => $targetDir.'/container.blade.php'], 'dcat-admin-views');
     }
 
     /**
