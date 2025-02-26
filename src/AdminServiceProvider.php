@@ -172,6 +172,7 @@ class AdminServiceProvider extends ServiceProvider
             $this->publishes([__DIR__.'/../resources/lang' => $this->app->langPath()], 'dcat-admin-lang');
             $this->publishes([__DIR__.'/../database/migrations' => database_path('migrations')], 'dcat-admin-migrations');
             $this->publishes([__DIR__.'/../resources/dist' => public_path(Admin::asset()->getRealPath('@admin'))], 'dcat-admin-assets');
+            $this->publishes([__DIR__.'/../resources/views/layouts/container.blade.php' => $this->app->resourcePath('views/admin/layouts/')], 'dcat-admin-views');
         }
     }
 
