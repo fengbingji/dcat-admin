@@ -182,7 +182,7 @@ class AdminServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    protected function publishesViews()
+    protected function publishesViews():void
     {
         // 目标目录路径
         $targetDir = $this->app->resourcePath('views/admin/layouts/');
