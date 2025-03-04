@@ -4,8 +4,6 @@ namespace Dcat\Admin\Form\Field;
 
 use Dcat\Admin\Exception\AdminException;
 use Illuminate\Support\Str;
-use Intervention\Image\Constraint;
-use Intervention\Image\Facades\Image as InterventionImage;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -181,9 +179,9 @@ trait ImageField
             $image->$action($size[0], $size[1]);
 
             if (! is_null($this->storagePermission)) {
-                $this->getStorage()->put("{$this->getDirectory()}/{$path}", $image->encode()->stream(), $this->storagePermission);
+                $this->getStorage()->put("{$this->getDirectory()}/{$path}", $image->encode()->toString(), $this->storagePermission);
             } else {
-                $this->getStorage()->put("{$this->getDirectory()}/{$path}", $image->encode()->stream());
+                $this->getStorage()->put("{$this->getDirectory()}/{$path}", $image->encode()->toString());
             }
         }
 
