@@ -6,7 +6,8 @@ use Dcat\Admin\Exception\AdminException;
 use Illuminate\Support\Str;
 use Intervention\Image\Constraint;
 use Intervention\Image\Facades\Image as InterventionImage;
-use Intervention\Image\ImageManagerStatic;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 trait ImageField
@@ -49,7 +50,7 @@ trait ImageField
     public function callInterventionMethods($target, $mime)
     {
         if (! empty($this->interventionCalls)) {
-            $image = ImageManagerStatic::make($target);
+            $image = (new ImageManager(new Driver()))->read($target);
 
             $mime = $mime ?: finfo_file(finfo_open(FILEINFO_MIME_TYPE), $target);
 
@@ -79,7 +80,7 @@ trait ImageField
             return parent::__call($method, $arguments);
         }
 
-        if (! class_exists(ImageManagerStatic::class)) {
+        if (! class_exists(ImageManager::class)) {
             throw new AdminException('To use image handling and manipulation, please install [intervention/image] first.');
         }
 
@@ -173,13 +174,11 @@ trait ImageField
             $path = $path.'-'.$name.'.'.$ext;
 
             /** @var \Intervention\Image\Image $image */
-            $image = InterventionImage::make($file);
+            $image = (new ImageManager(new Driver()))->read($file);
 
-            $action = $size[2] ?? 'resize';
+            $action = $size[2] ?? 'scale';
             // Resize image with aspect ratio
-            $image->$action($size[0], $size[1], function (Constraint $constraint) {
-                $constraint->aspectRatio();
-            });
+            $image->$action($size[0], $size[1]);
 
             if (! is_null($this->storagePermission)) {
                 $this->getStorage()->put("{$this->getDirectory()}/{$path}", $image->encode()->stream(), $this->storagePermission);
