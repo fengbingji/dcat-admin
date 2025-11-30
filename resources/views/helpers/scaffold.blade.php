@@ -97,7 +97,7 @@
 
                 <div class="form-group row">
                     <div class="offset-sm-1 col-sm-11 mt-1 text-capitalize">
-                        {!! $actionCreators->render(); !!}
+                        {!! $actionCreators->render() !!}
                     </div>
                 </div>
 
